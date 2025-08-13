@@ -1,0 +1,40 @@
+{
+  "name": "socium",
+  "version": "1.0.0",
+  "description": "A platform for analyzing leads using AI.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node backend/src/app.js",
+    "build": "tsc -p frontend/tsconfig.json",
+    "dev": "concurrently \"npm run start\" \"npm run build --watch\"",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^8.7.1",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.4.4",
+    "ts-node": "^10.4.0",
+    "jest": "^27.0.6",
+    "concurrently": "^6.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/socium.git"
+  },
+  "keywords": [
+    "AI",
+    "leads",
+    "analysis",
+    "PostgreSQL"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yourusername/socium/issues"
+  },
+  "homepage": "https://github.com/yourusername/socium#readme"
+}
