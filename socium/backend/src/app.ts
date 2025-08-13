@@ -1,6 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+
+// Importar logger e middlewares
+import logger from './utils/logger';
+import { requestLogger, errorLogger } from './middleware/logger';
+
 import { createConnection } from './database/connection';
 import leadRoutes from './routes/leads';
 import messageRoutes from './routes/messages';
@@ -11,6 +18,15 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Criar diretório de logs se não existir
+const logsDir = path.join(__dirname, '../logs');
+if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir, { recursive: true });
+}
+
+// Middleware de logs
+app.use(requestLogger);
 
 // Middleware
 app.use(cors({
@@ -120,19 +136,11 @@ app.get('/', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error('Error:', err.stack);
-    res.status(500).json({
-        success: false,
-        message: process.env.NODE_ENV === 'production' 
-            ? 'Erro interno do servidor' 
-            : err.message,
-        ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })
-    });
-});
+app.use(errorLogger);
 
 // 404 handler
 app.use('*', (req, res) => {
+    logger.warn('404 - Endpoint não encontrado', { url: req.originalUrl, method: req.method });
     res.status(404).json({
         success: false,
         message: 'Endpoint não encontrado'
@@ -145,13 +153,13 @@ const startServer = async () => {
         await createConnection();
         
         app.listen(PORT, () => {
-            console.log(`🚀 Socium AI Backend rodando em http://localhost:${PORT}`);
-            console.log(`📊 Health check disponível em http://localhost:${PORT}/health`);
-            console.log(`🌍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-            console.log(`🔧 CORS configurado para: ${process.env.CORS_ORIGIN || 'http://localhost:3000'}`);
+            logger.info(`🚀 Socium AI Backend rodando em http://localhost:${PORT}`);
+            logger.info(`📊 Health check disponível em http://localhost:${PORT}/health`);
+            logger.info(`🌍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+            logger.info(`🔧 CORS configurado para: ${process.env.CORS_ORIGIN || 'http://localhost:3000'}`);
         });
     } catch (error) {
-        console.error('❌ Erro ao iniciar servidor:', error);
+        logger.error('❌ Erro ao iniciar servidor:', error);
         process.exit(1);
     }
 };

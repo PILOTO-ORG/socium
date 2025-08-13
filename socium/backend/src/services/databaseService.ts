@@ -241,14 +241,14 @@ export class DatabaseService {
           `;
           
           const leadResult = await client.query(leadQuery, [
-            lead.name,
-            lead.email,
-            lead.phone,
-            lead.company,
-            lead.position,
-            lead.linkedinUrl,
-            lead.status,
-            lead.source,
+            (lead.name || '').substring(0, 255),
+            (lead.email || '').substring(0, 255),
+            (lead.phone || '').substring(0, 50),
+            (lead.company || '').substring(0, 255),
+            (lead.position || '').substring(0, 255),
+            (lead.linkedinUrl || '').substring(0, 1000),
+            (lead.status || 'new').substring(0, 20),
+            (lead.source || '').substring(0, 100),
             lead.totalMessages,
             lead.lastMessageDate
           ]);
@@ -301,23 +301,23 @@ export class DatabaseService {
           if (existingMessage.rows.length === 0) {
             // Inserir nova mensagem
             const messageQuery = `
-              INSERT INTO messages (lead_id, conversation_id, from_user, to_user, content, date_sent, subject, from_profile_url, to_profile_url, platform, message_type, folder, attachments)
+              INSERT INTO messages (lead_id, conversation_id, from_name, to_name, content, date_sent, subject, from_profile_url, to_profile_url, platform, message_type, folder, attachments)
               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             `;
             
             await client.query(messageQuery, [
               leadId,
-              message.conversationId,
-              message.from,
-              message.to,
+              (message.conversationId || '').substring(0, 255),
+              (message.from || '').substring(0, 255),
+              (message.to || '').substring(0, 255),
               message.content,
               message.date,
-              message.subject,
-              message.fromProfileUrl,
-              message.toProfileUrl,
-              message.platform,
-              message.type,
-              message.folder,
+              (message.subject || '').substring(0, 500),
+              (message.fromProfileUrl || '').substring(0, 1000),
+              (message.toProfileUrl || '').substring(0, 1000),
+              (message.platform || '').substring(0, 50),
+              (message.type || '').substring(0, 20),
+              (message.folder || '').substring(0, 100),
               message.attachments
             ]);
             

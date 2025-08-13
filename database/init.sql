@@ -1,3 +1,22 @@
+-- Criação do usuário socium (se não existir)
+DO $$
+BEGIN
+   IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'socium') THEN
+      CREATE USER socium WITH PASSWORD 'socium_password';
+   END IF;
+END
+$$;
+
+-- Garantir que o banco socium existe e dar permissões ao usuário
+GRANT ALL PRIVILEGES ON DATABASE socium TO socium;
+
+-- Dar permissões no schema public
+GRANT ALL ON SCHEMA public TO socium;
+GRANT CREATE ON SCHEMA public TO socium;
+
+-- Conectar ao banco socium como postgres para criar as tabelas
+\c socium postgres;
+
 -- Criação das tabelas do Socium AI
 
 -- Tabela de leads
@@ -93,3 +112,19 @@ CREATE TRIGGER update_leads_updated_at BEFORE UPDATE ON leads
 
 CREATE TRIGGER update_ai_analyses_updated_at BEFORE UPDATE ON ai_analyses
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Dados de exemplo
+INSERT INTO leads (name, email, company, position, source, status) VALUES
+('João Silva', 'joao@empresa.com', 'Tech Corp', 'CEO', 'LinkedIn', 'new'),
+('Maria Santos', 'maria@startup.com', 'StartupXYZ', 'CTO', 'CSV Upload', 'contacted'),
+('Pedro Costa', 'pedro@consultoria.com', 'Consultoria ABC', 'Diretor', 'LinkedIn', 'qualified');
+
+INSERT INTO ai_analyses (lead_id, opportunity_type, score, profile_score, engagement_score, intention_score, sentiment, confidence) VALUES
+(1, 'vendas', 85, 90, 80, 85, 'positivo', 0.92),
+(2, 'networking', 70, 75, 65, 70, 'neutro', 0.78),
+(3, 'vendas', 95, 98, 92, 95, 'positivo', 0.96);
+
+-- Dar permissões ao usuário socium em todas as tabelas
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO socium;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO socium;
+GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO socium;

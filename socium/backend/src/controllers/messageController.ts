@@ -66,9 +66,14 @@ export class MessageController {
             ];
 
             const { leadId } = req.query;
-            const filteredMessages = leadId 
-                ? messages.filter(msg => msg.leadId === parseInt(leadId as string))
-                : messages;
+            let filteredMessages = messages;
+            
+            if (leadId) {
+                const parsedLeadId = parseInt(leadId as string);
+                if (!isNaN(parsedLeadId) && parsedLeadId > 0) {
+                    filteredMessages = messages.filter(msg => msg.leadId === parsedLeadId);
+                }
+            }
 
             res.status(200).json({
                 success: true,

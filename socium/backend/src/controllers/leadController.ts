@@ -124,6 +124,15 @@ export class LeadController {
             await loadData();
             const id = parseInt(req.params.id);
             
+            // Validar se o ID é um número válido
+            if (isNaN(id) || id <= 0) {
+                res.status(400).json({ 
+                    success: false,
+                    message: 'ID do lead deve ser um número válido' 
+                });
+                return;
+            }
+            
             let lead: ParsedLead | null = null;
             
             if (useDatabase) {
@@ -160,12 +169,23 @@ export class LeadController {
         try {
             await loadData();
             
+            const id = parseInt(leadId);
+            
+            // Validar se o ID é um número válido
+            if (isNaN(id) || id <= 0) {
+                res.status(400).json({ 
+                    success: false,
+                    message: 'ID do lead deve ser um número válido' 
+                });
+                return;
+            }
+            
             let lead: ParsedLead | null = null;
             
             if (useDatabase) {
-              lead = await dbService.getLeadById(parseInt(leadId));
+              lead = await dbService.getLeadById(id);
             } else {
-              lead = leadsData.find(l => l.id === parseInt(leadId)) || null;
+              lead = leadsData.find(l => l.id === id) || null;
             }
             
             if (!lead) {
@@ -177,7 +197,7 @@ export class LeadController {
             }
 
             const analysisResult = lead.aiAnalysis || {
-                leadId: parseInt(leadId),
+                leadId: id,
                 opportunityType: 'networking',
                 score: 60,
                 profileScore: 70,

@@ -162,14 +162,14 @@ const UploadCSV: React.FC<UploadCSVProps> = ({ onUploadSuccess }) => {
                 {uploadStatus.isUploading ? (
                     <div className="space-y-4">
                         <div className="text-blue-600">
-                            <svg className="mx-auto h-12 w-12 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <svg className="mx-auto h-8 w-8 animate-spin" fill="none" viewBox="0 0 24 24">
                                 <circle
                                     className="opacity-25"
                                     cx="12"
                                     cy="12"
                                     r="10"
                                     stroke="currentColor"
-                                    strokeWidth="4"
+                                    strokeWidth={4}
                                 />
                                 <path
                                     className="opacity-75"
@@ -192,10 +192,10 @@ const UploadCSV: React.FC<UploadCSVProps> = ({ onUploadSuccess }) => {
                 ) : (
                     <>
                         <div className="text-gray-400 mb-4">
-                            <svg className="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                            <svg className="mx-auto h-8 w-8" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                                 <path
                                     d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                    strokeWidth="2"
+                                    strokeWidth={2}
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                 />

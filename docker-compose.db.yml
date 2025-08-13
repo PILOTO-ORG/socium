@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # Banco de dados PostgreSQL independente
+  postgres:
+    image: postgres:15-alpine
+    container_name: socium-postgres-only
+    environment:
+      POSTGRES_DB: socium
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_only:/var/lib/postgresql/data
+      - ./socium/database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - socium-db-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d socium"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c pg_stat_statements.max=10000
+      -c pg_stat_statements.track=all
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c work_mem=4MB
+      -c maintenance_work_mem=64MB
+
+volumes:
+  postgres_data_only:
+    driver: local
+
+networks:
+  socium-db-network:
+    driver: bridge
